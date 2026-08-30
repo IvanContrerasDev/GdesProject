@@ -36,5 +36,5 @@ yarn-error.log*
 next-env.d.ts
 
 admin_web_app/
-backend_app_gdes/
+backend_api_gdes/
 mobile_app_gdes/
