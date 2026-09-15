@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "descripcion": "Backlog de features del sistema GdeS. El leader es el único que modifica estados. Estados: pending | in_progress | done. Una sola feature puede estar in_progress a la vez.",
+  "features": []
+}
