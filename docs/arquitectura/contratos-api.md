@@ -4,11 +4,24 @@
 
 ## Estado actual
 
-Sin backend: mobile y admin operan con mocks que simulan estos contratos. Los tipos ya modelados en `mobile_app_gdes/types/api.ts` y `mobile_app_gdes/types/document.ts` y los modelos sugeridos en `admin_web_app/docs/spec_definition.md` Parte 8 son el punto de partida.
+**Backend definido (2026-09-15):** el diseño completo está en `backend_api_gdes/docs/` (stack, modelo de datos, endpoints, auth, asistencia, integraciones, convenciones). Mobile y admin siguen operando con mocks hasta su implementación.
 
-Los tipos TypeScript de las secciones siguientes están **copiados textualmente** de su fuente, con nota de qué app lo produce y cuál lo consume.
+Este archivo queda como **índice de contratos y registro de decisiones de integración**; el detalle endpoint-por-endpoint vive en `backend_api_gdes/docs/03-contratos-api.md`, que materializa estas decisiones.
+
+## Decisiones de integración (resueltas por el humano, 2026-09-15)
+
+Estas resoluciones cierran las divergencias que estaban abiertas. Mandan sobre mobile y sobre las sugerencias de la spec de admin (Parte 8), que eran propuestas de un agente, no contratos cerrados.
+
+1. **Campos del usuario/empleado → inglés en contrato, español en interfaz.** Todo el código y los contratos en inglés (`firstName`, `lastName`, `employeeId`); todo lo visible en UI en español (obligatorio), incluidos `error.message` y labels de catálogos. La relación legajo/`employeeId` es correcta tal cual. Mobile debe migrar `AuthUser { nombre; apellido; legajo }` → `{ id; firstName; lastName; email; employeeId; role }`.
+2. **Modelo del registro horario → eventos atómicos + proyección a registro diario.** Mobile emite eventos (`CHECK_IN`/`CHECK_OUT`/`ABSENCE`, un timestamp por evento); el backend los persiste append-only (`AttendanceEvent`) y proyecta el registro diario por `(userId, workplaceId, date)` con múltiples intervalos (algoritmo spec §23). Detalle: `backend_api_gdes/docs/05-asistencia-eventos-y-registros.md`.
+3. **Formato de respuesta → envoltorio `{ "data": ... }`** para todos los endpoints (listados: `{ "data": [], "pagination": {} }`). Mobile migra sus `{ success, message, registrationId? }` a `{ data: { eventId, recordId, message } }`.
+4. **Formato de error → `{ error: { code, message, retryable } }`** (la sugerencia de admin, que el humano prefiere). `code` SCREAMING_SNAKE en inglés, `message` en español, `retryable` coherente con HTTP status. Catálogo de códigos: `backend_api_gdes/docs/07-convenciones.md`.
+5. **Referencia al lugar en cargas documentales → siempre `workplaceId`.** Planillas: requerido (spec §39.3). Contingencia: `workplaceId: string | null`. Mobile migra `DocumentUploadRequest.workplace` → `workplaceId`.
+6. **Roles → `UserRole { EMPLOYEE, TO_BE_ADMIN, ADMIN, SUPER_ADMIN }`** (TO_BE_ADMIN como rol explícito, spec §10). A la app mobile solo accede rol `EMPLOYEE` (otro rol → 403 `ROLE_NOT_ALLOWED`). `AuthUser` gana el campo `role`.
 
 ## Contratos relevados
+
+> Los tipos originales de mobile (español, `{ success, message }`, etc.) quedan abajo como registro histórico del estado relevado. Los contratos vigentes son los de las decisiones anteriores + `backend_api_gdes/docs/03-contratos-api.md`.
 
 ### Sesión / usuario autenticado (mobile)
 
@@ -188,22 +201,20 @@ Convenciones REST sugeridas (secciones 81-86):
 - Respuesta exitosa sugerida: `{ "data": {...} }`; listados: `{ "data": [], "pagination": {} }`.
 - Error uniforme sugerido: `{ "error": { "code": "USER_ALREADY_EXISTS", "message": "El usuario ya existe", "retryable": false } }`. El frontend no debe depender únicamente de `retryable`.
 
-## Divergencias detectadas
+## Divergencias resueltas
 
-Comparación mobile (tipos reales) vs admin (spec). Todas requieren **CONSULTAR AL HUMANO antes de unificar**; no se decide unilateralmente.
-
-1. **Campos del usuario/empleado**: mobile usa español — `AuthUser { nombre; apellido; legajo }` — mientras la spec de admin sugiere inglés — `UserResponseDto { firstName; lastName }` — y nombra el legajo como `employee_id` (Parte 1, sección 7).
-2. **Modelo del registro horario**: mobile modela eventos atómicos (`RegisterRequest` con `action: "entrada" | "salida" | "ausencia"` y un `timestamp` por evento), mientras la spec de admin modela un **registro diario** por `(user_id, workplace_id, date)` que contiene múltiples **intervalos** (Parte 1, sección 8). No es solo un renombre: son dos formas distintas del mismo concepto.
-3. **Formato de respuesta**: mobile usa `{ success, message, registrationId? }` / `{ success, message, documentId? }`, mientras la spec de admin sugiere envoltorio `{ "data": ... }`.
-4. **Formato de error**: mobile `ApiError { code; message }` vs sugerencia admin `{ error: { code, message, retryable } }`.
-5. **Referencia al lugar en cargas documentales** (divergencia interna de mobile que impacta el contrato): `DocumentUploadRequest.workplace: string` (sin indicar si es id o nombre) vs `ContingencyUploadRequest.workplaceId: string | null`.
-6. **Roles**: la spec de admin define `UserRole { EMPLOYEE, ADMIN, SUPER_ADMIN }` más el estado temporal `toBeAdmin`; mobile no modela roles en absoluto (`AuthUser` no tiene campo de rol).
+Las 6 divergencias detectadas entre mobile y la spec de admin fueron resueltas por el humano el 2026-09-15 — ver "Decisiones de integración" arriba. Este registro histórico se mantiene solo como contexto.
 
 ## Pendiente de definir con el humano
 
-- Endpoints concretos (rutas, métodos, códigos de error).
-- Autenticación real (mecanismo, tokens, expiración).
-- Storage de archivos (planillas, documentos).
-- Resolución de las divergencias listadas arriba (idioma de campos, modelo evento vs registro diario con intervalos, envoltorio de respuestas/errores).
-- Definición de los enums que la spec de admin menciona sin definir (`IntervalStatus`, `IntervalType`, `AccountStatus`, `TimesheetStatus`, `DocumentType`, `RecordOrigin`, `Site`).
-- Contratos de entidades que solo existen del lado admin (empleados gestionados, clientes, sites, estados de planilla): la spec los describe funcionalmente pero no fija tipos.
+- ~~Endpoints concretos (rutas, métodos, códigos de error)~~ → definidos en `backend_api_gdes/docs/03-contratos-api.md`.
+- ~~Autenticación real~~ → `backend_api_gdes/docs/04-auth-y-seguridad.md` (JWT 30 min + refresh 7 días con rotación, 2FA email admin, Google OAuth + OTP WhatsApp).
+- ~~Storage de archivos~~ → `backend_api_gdes/docs/06-integraciones.md` (Cloudflare R2, S3-compatible; upload proxificado, descarga con URL firmada).
+- ~~Resolución de divergencias~~ → resueltas arriba.
+- ~~Enums sin definir~~ → definidos en `backend_api_gdes/docs/02-modelo-de-datos.md`.
+- ~~Contratos de entidades admin~~ → definidos en `backend_api_gdes/docs/02-modelo-de-datos.md` y `03-contratos-api.md`.
+
+Pendientes menores abiertos (no bloquean el diseño):
+
+- Campos de perfil `cuil`, `hireDate`, `position`: existen en el mock de mobile pero no en el alta de la spec admin — quedan nullable en `User` hasta confirmar origen de carga.
+- Ventana máxima para marcaciones offline tardías: sin límite en MVP.
