@@ -20,8 +20,8 @@ Primer feature funcional del backend. Mobile hoy autentica con credenciales fija
 - Rate limiting básico en `/auth/login` (429 `TOO_MANY_ATTEMPTS`).
 
 **NO incluye:**
-- 2FA por email (F-008). En esta feature el login admin con credenciales válidas emite tokens directamente, sin paso 2FA; F-008 lo agrega como paso intermedio (202 + `challengeId`) sin cambiar el contrato final.
-- Google OAuth, OTP WhatsApp, registro, recuperación, admin-access-request (F-008).
+- 2FA por email (admin) ni OTP WhatsApp (mobile) en el login (F-008). En esta feature el login con credenciales válidas emite tokens directamente, sin paso intermedio; F-008 lo convierte en 202 + `challengeId` sin cambiar el contrato final de tokens.
+- Google OAuth, registro, verificación de email (magic link), recuperación, admin-access-request (F-008).
 - Alta de usuarios (F-004): para probar, seed de un usuario EMPLOYEE de prueba.
 
 ## Referencias (fuente de verdad)

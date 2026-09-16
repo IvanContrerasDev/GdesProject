@@ -6,7 +6,7 @@
       "id": "F-001",
       "titulo": "Bootstrap del backend (NestJS + Prisma + Docker + cross-cutting)",
       "apps": ["backend"],
-      "estado": "pending",
+      "estado": "done",
       "taskSpec": "docs/tasks/F-001-backend-bootstrap.md",
       "criterios": [
         "Proyecto NestJS con TypeScript estricto compila y levanta",
@@ -104,9 +104,11 @@
       "taskSpec": null,
       "criterios": [
         "2FA por email en login admin (código 6 dígitos, 10 min, 5 intentos)",
+        "Login mobile con identifier+password exige OTP WhatsApp tras validar credenciales (202 + challengeId; tokens solo vía /auth/otp/verify)",
         "POST /auth/google verifica id_token y dispara OTP WhatsApp (Meta Cloud API)",
-        "POST /auth/register con unicidad + OTP WhatsApp; recuperación con token de un solo uso",
-        "Flujo admin-access-request con emails y links firmados aprobar/rechazar (Resend)",
+        "POST /auth/register con unicidad + OTP WhatsApp; al verificar OTP crea el User y envía email de verificación (magic link) sin emitir tokens",
+        "Login mobile (password y Google) con email sin verificar → 403 EMAIL_NOT_VERIFIED; GET /auth/email/verify y reenvío neutro",
+        "Recuperación con token de un solo uso; flujo admin-access-request con emails y links firmados aprobar/rechazar (Resend)",
         "Providers Email/WhatsApp con implementación log en dev"
       ]
     },

@@ -18,6 +18,7 @@ Estas resoluciones cierran las divergencias que estaban abiertas. Mandan sobre m
 4. **Formato de error → `{ error: { code, message, retryable } }`** (la sugerencia de admin, que el humano prefiere). `code` SCREAMING_SNAKE en inglés, `message` en español, `retryable` coherente con HTTP status. Catálogo de códigos: `backend_api_gdes/docs/07-convenciones.md`.
 5. **Referencia al lugar en cargas documentales → siempre `workplaceId`.** Planillas: requerido (spec §39.3). Contingencia: `workplaceId: string | null`. Mobile migra `DocumentUploadRequest.workplace` → `workplaceId`.
 6. **Roles → `UserRole { EMPLOYEE, TO_BE_ADMIN, ADMIN, SUPER_ADMIN }`** (TO_BE_ADMIN como rol explícito, spec §10). A la app mobile solo accede rol `EMPLOYEE` (otro rol → 403 `ROLE_NOT_ALLOWED`). `AuthUser` gana el campo `role`.
+7. **Verificación en auth mobile (2026-09-16).** Todo login mobile — identifier+password y Google — exige OTP WhatsApp como segundo paso (`/auth/login` y `/auth/google` responden 202 + `challengeId`; los tokens solo salen de `/auth/otp/verify`). El registro mobile exige OTP WhatsApp + verificación de email por magic link: tras el OTP la cuenta queda creada pero sin tokens, bloqueada para login (403 `EMAIL_NOT_VERIFIED`) hasta confirmar el email. Admin web mantiene 2FA por código de email en login y registro (sin cambios). Detalle: `backend_api_gdes/docs/04-auth-y-seguridad.md`.
 
 ## Contratos relevados
 
@@ -208,7 +209,7 @@ Las 6 divergencias detectadas entre mobile y la spec de admin fueron resueltas p
 ## Pendiente de definir con el humano
 
 - ~~Endpoints concretos (rutas, métodos, códigos de error)~~ → definidos en `backend_api_gdes/docs/03-contratos-api.md`.
-- ~~Autenticación real~~ → `backend_api_gdes/docs/04-auth-y-seguridad.md` (JWT 30 min + refresh 7 días con rotación, 2FA email admin, Google OAuth + OTP WhatsApp).
+- ~~Autenticación real~~ → `backend_api_gdes/docs/04-auth-y-seguridad.md` (JWT 30 min + refresh 7 días con rotación, 2FA email admin, OTP WhatsApp en todo login mobile, verificación de email por magic link en el registro, Google OAuth).
 - ~~Storage de archivos~~ → `backend_api_gdes/docs/06-integraciones.md` (Cloudflare R2, S3-compatible; upload proxificado, descarga con URL firmada).
 - ~~Resolución de divergencias~~ → resueltas arriba.
 - ~~Enums sin definir~~ → definidos en `backend_api_gdes/docs/02-modelo-de-datos.md`.
