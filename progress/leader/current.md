@@ -23,7 +23,14 @@ Ninguna (F-001 cerrada).
 
 ## Blockers / Preguntas para el humano
 - Verificación manual pendiente: `docker compose up --build` → `curl localhost:3000/health` en un entorno con Docker (el criterio se verificó estático + en vivo sin Docker: migraciones, seed y health endpoint OK contra Postgres real).
-- Push/merge de `feat/F-001-bootstrap` (6 commits locales) y de `harness-setup` (root): no se hace sin confirmación.
+
+## Git (autorizado por el humano, 2026-09-16, una sola vez)
+- Root: commit `b83ecfa` (cierre F-001) en `harness-setup`; merge ff a `main`; `develop` creada; push de main/develop/harness-setup a `GdesProject`.
+- Backend: merge ff `feat/F-001-bootstrap` → `main` (2dbcd92); `develop` creada; push main/develop/feat/F-001-bootstrap.
+- Mobile: merge ff `feature/update_harness` → `main` y → `develop` (3ad4449); push main/develop.
+- Admin: `develop` creada desde `main` (ff02f7a); push main/develop.
+- Estado final: en los 4 repos `main` == `develop`, todo pusheado, working trees limpios, cada repo quedó en su branch original.
+- A partir de acá vuelve la regla: ninguna mutación git sin confirmación explícita.
 
 ## Resultado final
 F-001 done. Branch `feat/F-001-bootstrap` con 6 commits locales. Detalle: `progress/backend/F-001-report.md`, review en `progress/reviewer/current.md` y sección Review del task spec.
