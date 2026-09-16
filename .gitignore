@@ -38,3 +38,4 @@ next-env.d.ts
 admin_web_app/
 backend_api_gdes/
 mobile_app_gdes/
+tmp/
