@@ -4,7 +4,6 @@ Este repo **ya no orquesta el trabajo operativo**. Contiene:
 
 1. El **template del conocimiento común** (`template/`) que se propaga a los subrepos.
 2. El agente **orchestrator** (`.agents/agents/orchestrator.md`), único agente de este repo (`kimi --agent orchestrator`).
-3. El histórico de diseño del harness (`docs/superpowers/`).
 
 El código y el trabajo operativo viven en los subrepos `mobile_app_gdes/`, `admin_web_app/` y `backend_api_gdes/` (repos git independientes y **autocontenidos**: cada uno tiene su propio `leader`, `reviewer`, `implementer-<app>`, `feature_list.json`, `progress/` y `docs/`).
 
@@ -32,7 +31,7 @@ El código y el trabajo operativo viven en los subrepos `mobile_app_gdes/`, `adm
 
 ## Reglas innegociables
 
-1. **Una sola feature a la vez por repo** (`feature_list.json` local, una `in_progress`).
+1. **Paralelismo coordinado**: por defecto una sola feature `in_progress` a la vez por repo; el leader local puede despachar varios implementers en paralelo si las tareas son independientes y bien acotadas (cada agente sigue haciendo UNA sola tarea; ver `docs/convenciones/flujo-de-trabajo.md` de cada repo).
 2. **Estado en disco, no en chat.** Todo agente documenta en `progress/<rol>/current.md` MIENTRAS trabaja.
 3. **Leader-orquestador-trabajador-revisor:** el orchestrator no implementa ni hace de leader local; el leader no implementa; el implementer no se autoaprueba; el reviewer no edita código.
 4. **Anti teléfono-descompuesto:** los subagentes escriben resultados en archivos y devuelven solo una referencia ligera (path + status).
@@ -44,9 +43,8 @@ El código y el trabajo operativo viven en los subrepos `mobile_app_gdes/`, `adm
 
 ## Mapa del repo
 
-- `template/common/` — agentes (leader, reviewer) y docs comunes (arquitectura, convenciones, TEMPLATE de task spec, changes_proposals/README).
+- `template/common/` — agentes (leader, reviewer), skills stub (`.agents/skills/`) y docs comunes (arquitectura, convenciones — incluida `superpowers.md`, TEMPLATE de task spec, changes_proposals/README).
 - `template/apps/<app>/` — definición del implementer de cada app.
 - `scripts/sync-template.sh` — propagación y chequeo de deriva.
 - `progress/orchestrator/` — estado vivo (`current.md`) e histórico (`history.md`) del orchestrator.
-- `docs/superpowers/` — specs/plans históricos del harness.
 - `.agents/agents/orchestrator.md` — único agente de este repo.
