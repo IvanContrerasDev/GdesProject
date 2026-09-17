@@ -1,37 +1,52 @@
-# GdesProject — Harness de orquestación
+# GdesProject — Template del harness y orquestación global
 
-Este repositorio es SOLO orquestación: documentación compartida, estado de trabajo e instrucciones para agentes. **No contiene código de producto.** El código vive en los subrepos `mobile_app_gdes/`, `admin_web_app/` y `backend_api_gdes/` (repos git independientes).
+Este repo **ya no orquesta el trabajo operativo**. Contiene:
+
+1. El **template del conocimiento común** (`template/`) que se propaga a los subrepos.
+2. El agente **orchestrator** (`.agents/agents/orchestrator.md`), único agente de este repo (`kimi --agent orchestrator`).
+3. El histórico de diseño del harness (`docs/superpowers/`).
+
+El código y el trabajo operativo viven en los subrepos `mobile_app_gdes/`, `admin_web_app/` y `backend_api_gdes/` (repos git independientes y **autocontenidos**: cada uno tiene su propio `leader`, `reviewer`, `implementer-<app>`, `feature_list.json`, `progress/` y `docs/`).
 
 ## Roles
 
-En este repo el agente principal es el **leader** (`.agents/agents/leader.md`). Las sesiones de trabajo se inician con `kimi --agent leader`.
-
-| Rol | Archivo | Puede | No puede |
+| Rol | Dónde vive | Puede | No puede |
 |---|---|---|---|
-| leader | `.agents/agents/leader.md` | planificar, leer código/docs, escribir docs/progress/feature_list, despachar subagentes | escribir código de producto |
-| reviewer | `.agents/agents/reviewer.md` | leer todo, correr tests, escribir veredictos en `progress/reviewer/` y `docs/tasks/` | editar código, despachar subagentes |
-| implementer-mobile | `.agents/agents/implementer-mobile.md` | implementar en `mobile_app_gdes/` | despachar subagentes, autoaprobarse |
-| implementer-admin | `.agents/agents/implementer-admin.md` | implementar en `admin_web_app/` | despachar subagentes, autoaprobarse |
-| implementer-backend | `.agents/agents/implementer-backend.md` | implementar en `backend_api_gdes/` | despachar subagentes, autoaprobarse |
+| orchestrator | `GdesProject/.agents/agents/orchestrator.md` | mantener `template/`, propagar con `scripts/sync-template.sh`, procesar `changes_proposals/`, dejar instrucciones cross-app en `<repo>/progress/leader/inbox/` | escribir código de producto, crear task specs en subrepos (eso es del leader local) |
+| leader | `<repo>/.agents/agents/leader.md` (SYNCED) | planificar, crear task specs, mantener `feature_list.json` y `progress/` de SU repo, despachar implementer y reviewer locales | escribir código, editar archivos SYNCED |
+| reviewer | `<repo>/.agents/agents/reviewer.md` (SYNCED) | leer todo, correr tests, escribir veredictos en `progress/reviewer/` y en el task spec | editar código, despachar subagentes |
+| implementer-\<app\> | `<repo>/.agents/agents/implementer-<app>.md` (SYNCED) | implementar UNA feature por sesión en su repo | despachar subagentes, autoaprobarse |
+
+## Conocimiento común (SYNCED)
+
+- Fuente única: `template/common/` (+ `template/apps/<app>/` para el implementer de cada app).
+- Los archivos propagados llevan el encabezado `SYNCED-FROM-TEMPLATE` y son **de solo lectura** en los subrepos.
+- Cambios: cualquier agente de un subrepo deja una propuesta en `<repo>/docs/changes_proposals/YYYYMMDD-slug.md`; el orchestrator la aplica en `template/` y propaga.
+- Propagación: `scripts/sync-template.sh push` (aplica) y `scripts/sync-template.sh --check` (detecta deriva, exit 1 si la hay). En un push, los archivos del template **ganan** sobre modificaciones locales.
+
+## Flujo cross-app
+
+1. El humano le trae la iniciativa al **orchestrator** (`kimi --agent orchestrator` en este repo).
+2. El orchestrator evalúa, actualiza contratos comunes si hace falta (template + sync) y deja instrucciones en `<repo>/progress/leader/inbox/` de cada repo involucrado.
+3. El humano abre cada repo con `kimi --agent leader`; el leader local procesa su inbox y gestiona el ciclo leader → implementer → reviewer en su propio repo.
 
 ## Reglas innegociables
 
-1. **Una sola feature a la vez por agente.** No mezclar cambios de varias tareas en la misma sesión.
-2. **Estado en disco, no en chat.** `progress/<rol>/current.md` e `history.md` sobreviven reinicios y context windows agotadas. Todo agente documenta MIENTRAS trabaja, no solo al final.
-3. **Líder-Trabajador-Revisor:** el líder no implementa, el implementador no se autoaprueba, el revisor no edita código.
-4. **Anti teléfono-descompuesto:** los subagentes escriben sus resultados en archivos y devuelven solo una referencia ligera (path al registro + status), nunca un dump de contenido.
-5. **La documentación es la fuente de verdad.** Si algo no está en `docs/` (del root o del subrepo) ni en el task spec, NO se inventa: se frena y se consulta al humano. Igual ante contradicciones entre documentos.
-6. **Comunicación entre agentes siempre vía archivos** en `progress/` y `docs/tasks/`.
+1. **Una sola feature a la vez por repo** (`feature_list.json` local, una `in_progress`).
+2. **Estado en disco, no en chat.** Todo agente documenta en `progress/<rol>/current.md` MIENTRAS trabaja.
+3. **Leader-orquestador-trabajador-revisor:** el orchestrator no implementa ni hace de leader local; el leader no implementa; el implementer no se autoaprueba; el reviewer no edita código.
+4. **Anti teléfono-descompuesto:** los subagentes escriben resultados en archivos y devuelven solo una referencia ligera (path + status).
+5. **La documentación es la fuente de verdad.** Si algo no está en `docs/` ni en el task spec, NO se inventa: se frena y se consulta al humano.
+6. **Comunicación entre agentes siempre vía archivos** en `progress/`, `docs/tasks/` y `docs/changes_proposals/`.
 7. **Preguntas conceptuales o de exploración (lectura pura)** se responden directamente, sin lanzar subagentes.
-8. **Ninguna mutación git** (add/commit/push) sin confirmación explícita del usuario.
-9. **Instalación de skills solo con confirmación del usuario.** La skill `find-skills` instala paquetes de terceros (`npx skills add -g -y`, con `-y` que saltea confirmaciones). Ningún agente instala skills sin confirmación explícita del humano.
+8. **Ninguna mutación git** (add/commit/push) sin confirmación explícita del usuario, en ningún repo.
+9. **Instalación de skills solo con confirmación del usuario.**
 
-## Mapa del harness
+## Mapa del repo
 
-- `feature_list.json` — backlog con estados (pending / in_progress / done), criterios de aceptación y puntero al task spec.
-- `docs/arquitectura/` — visión del sistema y contratos entre apps (fuente de verdad de integración).
-- `docs/convenciones/` — convenciones globales y flujo de trabajo detallado.
-- `docs/tasks/` — specs de tarea (se crean desde `TEMPLATE.md`).
-- `progress/<rol>/` — estado vivo (`current.md`) e histórico (`history.md`) por rol.
-- `.agents/agents/` — definiciones de los agentes.
-- `.agents/skills/` — skills comunes. Cada subrepo tiene las suyas en `<subrepo>/.agents/skills/`.
+- `template/common/` — agentes (leader, reviewer) y docs comunes (arquitectura, convenciones, TEMPLATE de task spec, changes_proposals/README).
+- `template/apps/<app>/` — definición del implementer de cada app.
+- `scripts/sync-template.sh` — propagación y chequeo de deriva.
+- `progress/orchestrator/` — estado vivo (`current.md`) e histórico (`history.md`) del orchestrator.
+- `docs/superpowers/` — specs/plans históricos del harness.
+- `.agents/agents/orchestrator.md` — único agente de este repo.
