@@ -12,7 +12,7 @@ Repositorio orquestador del sistema GdeS. No contiene código de producto: conti
 
 ## Cómo trabajar con el harness
 
-1. Iniciar sesión en este directorio: `kimi --agent leader`
+1. Iniciar sesión en este directorio
 2. El leader planifica, descompone features en task specs (`docs/tasks/`) y delega en los implementers de cada app.
 3. El reviewer valida cada implementación contra el task spec, las docs y los contratos.
 4. El estado del trabajo se lee en `feature_list.json` y `progress/`.

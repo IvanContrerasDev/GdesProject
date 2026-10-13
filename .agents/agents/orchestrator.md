@@ -1,7 +1,7 @@
 ---
 name: orchestrator
 description: Orquestador global del sistema GdeS. Vive SOLO en el repo GdesProject. Recibe iniciativas cross-app, instruye a los leaders de cada subrepo, y gestiona el conocimiento común (template + changes_proposals + sync). Nunca escribe código de producto.
-whenToUse: Agente principal del repo GdesProject (kimi --agent orchestrator). Para iniciativas que tocan más de un subrepo o para mantener el conocimiento común.
+whenToUse: Agente principal del repo GdesProject. Para iniciativas que tocan más de un subrepo o para mantener el conocimiento común.
 tools:
   - Read
   - Grep
@@ -35,7 +35,7 @@ Cuando el humano trae una iniciativa que afecta a más de un subrepo (ej: "agreg
 1. Evaluás qué repos están involucrados y qué implica en cada uno (podés leer código/docs de los subrepos, o despachar `explore`).
 2. Si la iniciativa toca contratos entre apps, primero actualizás el template (`template/common/docs/arquitectura/contratos-api.md`) y lo propagás con `scripts/sync-template.sh`.
 3. Dejás una instrucción para el leader de cada repo involucrado en `<repo>/progress/leader/inbox/YYYYMMDD-slug.md`, con: contexto, objetivo, qué features/tasks crear, referencias (contratos, docs) y dependencias entre repos (qué debe existir antes en el otro repo).
-4. Le indicás al humano que abra cada repo con `kimi --agent leader` para que el leader local procese su inbox y gestione el trabajo en su propio repo. Si el entorno permite despachar agentes sobre los subrepos, podés hacerlo vos con un prompt que arranque: "Actuás como leader del repo <path>. Procesá tu inbox en progress/leader/inbox/ y seguí las reglas de tu .agents/agents/leader.md".
+4. Le indicás al humano que abra cada repo para que el leader local procese su inbox y gestione el trabajo en su propio repo. Si el entorno permite despachar agentes sobre los subrepos, podés hacerlo vos con un prompt que arranque: "Actuás como leader del repo <path>. Procesá tu inbox en progress/leader/inbox/ y seguí las reglas de tu .agents/agents/leader.md".
 5. Nunca creás task specs ni features directamente en los subrepos: eso es trabajo del leader local. Vos solo dejás la instrucción.
 
 ### 2. Mantenimiento del conocimiento común

@@ -1,14 +1,18 @@
 # Current — orchestrator
 
 ## Tarea activa
-Ninguna.
+Sincronización documental completada el 2026-10-12; quedan dos decisiones humanas solicitadas y trabajo local de materialización por los leaders.
 
 ## Haciendo ahora
-- 2026-09-17 (segunda ronda): el humano ratificó los candidatos de P-01, P-03, P-04 y parte de P-02. Decisiones 8–12 reescritas en `template/common/docs/arquitectura/contratos-api.md` (snapshot TTL 15 min, rutas `/auth/web/*`, relogin ante refresh ambiguo, solicitud admin con password actual para existentes, `expectedVersion`, rechazo de solapamientos, motivo de ausencia opcional siempre, retrospectivas permitidas, 20 MiB ×10 atómico, dashboard por mes seleccionado). Propuestas P-01/P-03/P-04 marcadas `aplicada`; P-02 y P-05 siguen `pendiente` parcialmente. Sync push OK en los 3 repos. Instrucciones en inbox de backend (`20260917-ratificacion-p01-a-p04.md`) y admin (`20260917-contratos-ratificados.md`). Investigación de proveedores de mapas (P-05) en curso con subagente.
-- 2026-09-17: procesé las 5 propuestas de `admin_web_app/docs/changes_proposals/` (P-01..P-05). Primera ronda: solo decisiones ya confirmadas.
-- 2026-09-16: reestructura del harness a template + subrepos autónomos (leader/reviewer/implementer por repo, sync de commons, changes_proposals).
+- Inventarié y leí las propuestas de cambios de `admin_web_app`; no hay propuestas de contrato en `backend_api_gdes` ni `mobile_app_gdes` (solo sus README).
+- Encontré y corregí contradicciones en el contrato común: Geoapify frente a Google Maps, `REJECTED` frente a la aprobación pura/eliminación de intervalos ratificadas, y la ausencia de P-06/P-07 y F-006 detalle/eventos.
+- `admin_web_app/feature_list.json` ya marca F-011, F-012, F-013 y F-010 como `pending`; `progress/leader/current.md` los ordena como próximos. No tocaré esos estados desde el orchestrator.
+- Hay cambios locales preexistentes en root y admin. Se preservarán; no se ejecutarán operaciones git.
+- Fuente común actualizada (decisiones 12–15 y aclaraciones de estado), propagada a los tres subrepos; `scripts/sync-template.sh --check` termina OK. Inboxes para los leaders de admin, backend y mobile creados para materialización/reconciliación documental local.
 
 ## Blockers / Preguntas para el humano
-- Dominios tentativos del backend registrados (2026-09-17): prod `backend-api-gdes-prod.vercel.app`, test `backend-api-gdes-dev.vercel.app` — a confirmar/cambiar al deploy. Falta: orígenes de la **web admin** (allowlist CORS). Advertencia documentada: vercel.app está en la Public Suffix List → web y API en subdominios distintos = cross-site (evaluar dominio propio o same-site).
-- Ratificar cuando backend los proponga: identificador de generación de sesión, mecanismo CSRF exacto y atributos definitivos de cookie (P-02).
-- Operaciones: crear cuenta Geoapify + credencial restringida por dominio antes de F-005 (P-05, ya decidido el proveedor).
+- P-02: el humano prefiere proyectos Vercel separados, pero difiere la elección de dominios. Considera `admin.prolimpservicios.com`; API en `backend-gdes.vercel.app` sería cross-site, mientras `api.prolimpservicios.com` sería same-site pero cross-origin. Quedan propuesta backend de identificador/CSRF, URLs reales y verificación/fallback de navegadores.
+- La propuesta F-006 de detalle/eventos está aprobada para mocks, pero la materialización exacta del DTO en backend sigue pendiente. La ventana de marcaciones offline tardías quedó ratificada en 24 horas.
+
+## Resultado final
+Fuente común y tres contratos sincronizados; revisión y seguimiento local entregados a los leaders vía inbox. Ventana offline de 24 h ratificada. El humano quiere proyectos Vercel separados; la topología exacta de dominios queda para más adelante. P-02 sigue abierto hasta definir URLs, probar compatibilidad y acordar fallback. No se ejecutaron operaciones git.
