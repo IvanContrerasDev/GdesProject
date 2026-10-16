@@ -1,20 +1,21 @@
 # GdesProject
 
-Repositorio orquestador del sistema GdeS. No contiene código de producto: contiene la documentación compartida, el estado de trabajo y la configuración del harness multi-agente.
+Template compartido y coordinación global de GdeS. El código de producto vive en tres repos Git independientes:
 
-## Subproyectos
+| Subrepo | Estado real |
+|---|---|
+| [Mobile](mobile_app_gdes/README.md) | App Expo/React Native navegable con servicios mock y sesión local |
+| [Admin](admin_web_app/README.md) | Aplicación React/Vite con módulos operativos sobre mocks; integración HTTP pendiente |
+| [Backend](backend_api_gdes/README.md) | Bootstrap NestJS/Prisma, User/Site y health; dominio/auth pendientes |
 
-| Subrepo | Qué es | Estado |
-|---|---|---|
-| `mobile_app_gdes/` | App Expo/React Native para empleados | En desarrollo (docs completas en su `docs/`) |
-| `admin_web_app/` | Web administrativa (RRHH/gerencia) | Spec completa en su `docs/`, sin código aún |
-| `backend_api_gdes/` | API que integra ambas | Por definir |
+El orchestrator mantiene acuerdos compartidos e instruye a los leaders locales; cada leader gestiona su backlog y ciclo implementer → reviewer. Reglas de roles: [AGENTS.md](AGENTS.md).
 
-## Cómo trabajar con el harness
+Fuentes oficiales:
 
-1. Iniciar sesión en este directorio
-2. El leader planifica, descompone features en task specs (`docs/tasks/`) y delega en los implementers de cada app.
-3. El reviewer valida cada implementación contra el task spec, las docs y los contratos.
-4. El estado del trabajo se lee en `feature_list.json` y `progress/`.
+- [Visión del sistema](template/common/docs/arquitectura/vision-sistema.md).
+- [Contratos de integración y pendientes](template/common/docs/arquitectura/contratos-api.md).
+- [Política documental](template/common/docs/convenciones/convenciones-globales.md): decisión vigente y motivo breve en su tema; sin historiales. Propuestas temporales se eliminan al incorporarse y verificarse el sync.
+- [Flujo local](template/common/docs/convenciones/flujo-de-trabajo.md).
+- [Estado actual del orchestrator](progress/orchestrator/current.md).
 
-Ver `AGENTS.md` para las reglas y `docs/convenciones/flujo-de-trabajo.md` para el protocolo completo.
+Propagar: `scripts/sync-template.sh push`; verificar: `scripts/sync-template.sh --check`. El sync documental no implica disponibilidad de API ni ejecuta operaciones Git.

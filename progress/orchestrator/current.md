@@ -1,18 +1,17 @@
-# Current — orchestrator
+# Estado actual — orchestrator
 
-## Tarea activa
-Sincronización documental completada el 2026-10-12; quedan dos decisiones humanas solicitadas y trabajo local de materialización por los leaders.
+Sin tarea activa. Documentación consolidada y sincronizada con el código observado al 2026-10-16.
 
-## Haciendo ahora
-- Inventarié y leí las propuestas de cambios de `admin_web_app`; no hay propuestas de contrato en `backend_api_gdes` ni `mobile_app_gdes` (solo sus README).
-- Encontré y corregí contradicciones en el contrato común: Geoapify frente a Google Maps, `REJECTED` frente a la aprobación pura/eliminación de intervalos ratificadas, y la ausencia de P-06/P-07 y F-006 detalle/eventos.
-- `admin_web_app/feature_list.json` ya marca F-011, F-012, F-013 y F-010 como `pending`; `progress/leader/current.md` los ordena como próximos. No tocaré esos estados desde el orchestrator.
-- Hay cambios locales preexistentes en root y admin. Se preservarán; no se ejecutarán operaciones git.
-- Fuente común actualizada (decisiones 12–15 y aclaraciones de estado), propagada a los tres subrepos; `scripts/sync-template.sh --check` termina OK. Inboxes para los leaders de admin, backend y mobile creados para materialización/reconciliación documental local.
+## Fuentes vigentes
 
-## Blockers / Preguntas para el humano
-- P-02: el humano prefiere proyectos Vercel separados, pero difiere la elección de dominios. Considera `admin.prolimpservicios.com`; API en `backend-gdes.vercel.app` sería cross-site, mientras `api.prolimpservicios.com` sería same-site pero cross-origin. Quedan propuesta backend de identificador/CSRF, URLs reales y verificación/fallback de navegadores.
-- La propuesta F-006 de detalle/eventos está aprobada para mocks, pero la materialización exacta del DTO en backend sigue pendiente. La ventana de marcaciones offline tardías quedó ratificada en 24 horas.
+- [Contrato común y pendientes de integración](../../template/common/docs/arquitectura/contratos-api.md): distingue diseño aprobado, mocks, disponibilidad real y decisiones abiertas.
+- [Política documental](../../template/common/docs/convenciones/convenciones-globales.md): decisión actual y racional breve por tema; propuestas/tareas temporales, sin historiales.
+- Brechas locales: [Admin](../../admin_web_app/docs/integracion.md), [Mobile](../../mobile_app_gdes/docs/05-servicios-datos-y-contratos.md), [Backend](../../backend_api_gdes/docs/03-contratos-api.md).
 
-## Resultado final
-Fuente común y tres contratos sincronizados; revisión y seguimiento local entregados a los leaders vía inbox. Ventana offline de 24 h ratificada. El humano quiere proyectos Vercel separados; la topología exacta de dominios queda para más adelante. P-02 sigue abierto hasta definir URLs, probar compatibilidad y acordar fallback. No se ejecutaron operaciones git.
+## Pendientes del sistema
+
+Sesión web (CSRF/generación, dominios/cookies y navegadores), contratos de archivos/métricas y coherencia provincial, DTO final detalle/eventos y migración de mocks. El backend solo registra health. La única propuesta abierta de Admin conserva los puntos que requieren ratificación; implementaciones y revisiones locales siguen a cargo de sus leaders, con estados/aprobaciones/dependencias de backlog preservados.
+
+QA Mobile: TypeScript pasa; registro tiene 3 tests exitosos y 4 fallidos por geometría/altura esperada, documentados en [QA](../../mobile_app_gdes/docs/09-verificacion-y-qa.md). No se cambió producto para resolverlos.
+
+Verificación documental: sync sin deriva, enlaces locales y referencias de backlog válidos, diff sin errores de espacios; 95 secciones de requisitos Admin preservadas. Cambios limitados a documentación y metadatos documentales; commits locales autorizados por el humano; publicación remota no solicitada.

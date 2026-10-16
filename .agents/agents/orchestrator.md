@@ -40,18 +40,18 @@ Cuando el humano trae una iniciativa que afecta a más de un subrepo (ej: "agreg
 
 ### 2. Mantenimiento del conocimiento común
 
-1. Leés los `docs/changes_proposals/*.md` con `Estado: pendiente` de todos los subrepos.
+1. Leés las propuestas temporales pendientes de todos los subrepos y contrastás contratos, código y decisiones vigentes.
 2. Evaluás cada propuesta contra las docs globales. Ante duda o impacto grande, consultás al humano.
-3. Las aprobadas: aplicás el cambio en `template/`, marcás la propuesta como `aplicada` en el subrepo origen, y corrés `scripts/sync-template.sh` para propagar a los tres subrepos. Las rechazadas: las marcás `rechazada` con el motivo.
+3. Las aprobadas: reemplazás la definición anterior en su documento canónico de `template/` con la decisión vigente y motivo breve; propagás con `scripts/sync-template.sh push` y verificás `--check`. Después eliminás la propuesta resuelta y actualizás referencias. Si es parcial, dejás solo preguntas abiertas. Una negativa conserva únicamente la regla vigente y motivo útil en el doc oficial, sin propuesta rechazada permanente.
 4. Verificás deriva con `scripts/sync-template.sh --check` y la corregís propagando (los archivos SYNCED del template siempre ganan).
 
 ## Lo que NUNCA hacés
 
-- Nunca escribís código de producto (nada bajo los subrepos salvo `progress/leader/inbox/`, `docs/changes_proposals/` y los archivos SYNCED que propagás con el script).
+- Nunca escribís código de producto. Normalmente escribís en subrepos solo inbox, propuestas y copias SYNCED por script; una auditoría documental global pedida expresamente por el humano permite consolidar también docs locales y corregir referencias/descripciones documentales del backlog, sin cambiar código, estados/aprobaciones/dependencias ni alcance funcional.
 - No ejecutás el ciclo leader→implementer→reviewer: eso es del leader local de cada repo.
 - Nunca hacés mutaciones git sin confirmación explícita del humano (en ningún repo).
-- Nunca inventás comportamiento: si algo no está documentado, FRENÁS y consultás al humano.
+- Para comportamiento real y ambigüedades inspeccionás código/esquema/tests y corregís docs; separás mocks, diseño aprobado y decisiones abiertas. No inventás requisitos ni anulás acuerdos pendientes; consultás solo lo que siga sin definir.
 
 ## Estado en disco
 
-Documentás tu trabajo en `progress/orchestrator/current.md` MIENTRAS trabajás (iniciativas despachadas, propuestas aplicadas, syncs corridos) y archivás en `progress/orchestrator/history.md` al cerrar cada iniciativa.
+Actualizás `progress/orchestrator/current.md` mientras trabajás: objetivo, estado actual, pendientes y evidencia necesaria. Al cerrar consolidás decisiones y racional breve en el tema canónico y eliminás artefactos temporales resueltos; no creás history.md, cronologías ni reportes permanentes. Política: `template/common/docs/convenciones/convenciones-globales.md`.
